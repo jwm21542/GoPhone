@@ -1,0 +1,168 @@
+--회원 테이블:
+drop sequence memseq ;
+
+create sequence memseq 
+increment by 1
+start with 1
+minvalue 0
+maxvalue 10000
+nocache;
+
+drop table members cascade constraints purge;
+create table members(
+no number primary key,
+name varchar2(30) not null,
+userid varchar2(12) not null unique,
+password varchar(12) not null,
+brn1 varchar2(10),
+brn2 varchar2(10),
+bankNum varchar2(15),
+bankName varchar2(12),
+email varchar2(20),
+phn1 varchar2(10), 
+phn2 varchar2(10),
+phn3 varchar2(10),
+addr1 varchar2(50),	
+addr2 varchar2(50),
+addr3 varchar2(50),
+postCode varchar2(10),
+regdate date default sysdate,
+point number default 5000
+);
+
+--관리자 id 
+insert into members(no, name, userid, password, regdate) values(
+memseq.nextval,
+'관리자',
+'admin',
+'ad253',
+sysdate
+);
+commit;
+ 
+--판매중인 폰 테이블
+drop sequence pseq;
+create sequence pseq
+increment by 1
+start with 1
+minvalue 0
+maxvalue 10000
+nocache;
+
+drop table products cascade constraints purge;
+create table products(
+pnum int primary key,
+brand varchar2(20) not null,
+model varchar2(20) not null,
+cond varchar2(10),
+storage varchar2(10),
+sqty int default 50,
+price int,
+point int default 0,
+pimage varchar2(60),
+pimage2 varchar2(60),
+color varchar2(20),
+pdesc varchar2(1000));
+
+--판매 신청 테이블
+drop sequence reqseq ;
+
+create sequence reqseq 
+increment by 1
+start with 1
+minvalue 0
+maxvalue 10000
+nocache;
+
+drop table request cascade constraints purge;
+create table request(
+reqno number primary key,
+memno REFERENCES members(no) on delete set null,
+pnum REFERENCES products(pnum) on delete set null,
+fimage varchar2(60),
+bimage varchar2(60),
+approve varchar2(30),
+sellPrice number);
+
+--주문내역 테이블
+drop sequence orderseq;
+create sequence orderseq
+increment by 1
+start with 1
+minvalue 0
+maxvalue 10000
+nocache;
+
+drop table orders cascade constraints purge;
+create table orders(
+orderNo number primary key,
+memno REFERENCES members(no) on delete set null,
+pnum REFERENCES products(pnum) on delete set null,
+qty int not null,
+sellDate date default sysdate,
+totalPrice number not null,
+pointUsed number,
+pointRcvd number);
+
+
+--review table
+drop sequence reviewseq;
+create sequence reviewseq
+increment by 1
+start with 1
+minvalue 0
+maxvalue 10000
+nocache;
+
+drop table reviews cascade constraints purge;
+create table reviews(
+revNo number primary key,
+memNo number REFERENCES members(no) on delete set null,
+memName varchar2(30) not null,
+brand varchar2(20) not null,
+model varchar2(20) not null,
+revDate date default sysdate,
+revText varchar2(1000)
+);
+
+
+drop sequence boardseq;
+create sequence boardseq
+increment by 1
+start with 1
+minvalue 0
+maxvalue 10000
+nocache;
+
+drop table board cascade constraints purge;
+create table board(
+no number primary key,
+title varchar2(40) not null,
+memno number references members(no) on delete set null,
+regDate date default sysdate not null,
+ref number not null,
+re_step number not null,
+re_level number not null,
+content varchar2(300),
+readcount number default 0);
+
+insert into board values(boardseq.nextval, 'title1', 4, sysdate, 1,0,0,'내용1', 0);
+insert into board values(boardseq.nextval, 'title2', 4, sysdate, 2,0,0,'내용2', 0);
+insert into board values(boardseq.nextval, 'title3', 14, sysdate, 2,4,1,'내용21', 0);
+insert into board values(boardseq.nextval, 'title4', 4, sysdate, 2,1,1,'내용22', 0);
+insert into board values(boardseq.nextval, 'title5', 14, sysdate, 2,3,2,'내용221', 0);
+insert into board values(boardseq.nextval, 'title6', 9, sysdate, 2,2,2,'내용222', 0);
+
+drop sequence wishseq;
+create sequence wishseq
+incremeny by 1
+start with 1
+minvalue 0
+maxvalue 10000
+nocache;
+
+drop table wish cascade constraints purge;
+create table wish(
+memno number references members(no) on delete set null,
+brand varchar2(20),
+model varchar2(20));
